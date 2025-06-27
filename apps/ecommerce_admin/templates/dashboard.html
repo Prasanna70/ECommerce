@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block content %}
+<h3 class="dashboard-title">Dashboard Overview</h3>
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card bg-info text-white p-3">
+      <h5><i class="fas fa-shopping-cart me-2"></i>Orders</h5>
+      <h3>1,250</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white p-3">
+      <h5><i class="fas fa-dollar-sign me-2"></i>Revenue</h5>
+      <h3>$23.5k</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark p-3">
+      <h5><i class="fas fa-users me-2"></i>Customers</h5>
+      <h3>980</h3>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-danger text-white p-3">
+      <h5><i class="fas fa-box-open me-2"></i>Products</h5>
+      <h3>560</h3>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">Sales Chart</div>
+      <div class="card-body">
+        <canvas id="salesChart" height="150"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">Recent Orders</div>
+      <div class="card-body">
+        <ul class="list-group">
+          <li class="list-group-item">#1001 - Delivered</li>
+          <li class="list-group-item">#1002 - Pending</li>
+          <li class="list-group-item">#1003 - Cancelled</li>
+          <li class="list-group-item">#1004 - Delivered</li>
+          <li class="list-group-item">#1005 - Processing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
