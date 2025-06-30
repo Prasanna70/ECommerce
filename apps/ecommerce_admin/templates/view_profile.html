@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow p-4" style="max-width: 600px; width: 100%;">
+    <div class="text-center mb-4">
+      <h3 class="fw-bold text-primary">My Profile</h3>
+    </div>
+
+    <div class="mb-3">
+      <p><strong>Name:</strong> {{ admin.full_name }}</p>
+      <p><strong>Email:</strong> {{ admin.email }}</p>
+      <p><strong>Mobile:</strong> {{ admin.mobile }}</p>
+      <p><strong>Role:</strong> {{ admin.role }}</p>
+    </div>
+
+    {% if admin.profile_image %}
+      <div class="text-center mt-4">
+        <img src="{{ admin.profile_image.url }}" alt="Profile Image" class="rounded-circle border" width="120" height="120">
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
