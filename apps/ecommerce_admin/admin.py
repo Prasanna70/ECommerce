@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib import admin
 from .models import (
     Category,
     ProductStatus,
@@ -12,6 +11,9 @@ from .models import (
     ProductProductAttributeMapping,
     ProductSpecificationAttributeMapping
 )
+
+from django.contrib.auth.admin import UserAdmin
+from .models import Admin
 
 # --------------------------------------------
 # Category Admin
@@ -106,3 +108,21 @@ class ProductProductAttributeMappingAdmin(admin.ModelAdmin):
 @admin.register(ProductSpecificationAttributeMapping)
 class ProductSpecificationAttributeMappingAdmin(admin.ModelAdmin):
     list_display = ('id', 'product', 'specification_attribute_option_id')
+
+
+
+
+
+class CustomAdmin(UserAdmin):
+    model = Admin
+    list_display = ('email', 'full_name', 'crn', 'mobile', 'is_staff')
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal Info', {'fields': ('full_name', 'mobile', 'crn', 'profile_image')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+    )
+    add_fieldsets = (
+        (None, {'fields': ('email', 'full_name', 'mobile', 'password1', 'password2')}),
+    )
+    search_fields = ('email', 'crn')
+    ordering = ('email',)

@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group, Permission
 
 # --------------------------------------------
 # Category Model
@@ -25,7 +26,7 @@ class ProductStatus(models.Model):
 # Product Model
 # --------------------------------------------
 class Product(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None)
     name = models.CharField(max_length=100, default="")
     description = models.TextField(max_length=1000, default="")
     image = models.ImageField(upload_to='products/', blank=True, null=True, default="")
@@ -42,7 +43,7 @@ class Product(models.Model):
         default=""
     )
     status = models.ForeignKey(ProductStatus, on_delete=models.SET_NULL, null=True, blank=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)  # Soft delete
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def is_editable(self):
         return self.status and self.status.status in ['not_shipped', 'processing']
@@ -55,7 +56,7 @@ class Product(models.Model):
 # --------------------------------------------
 class ProductReview(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None)
     custom_label = models.CharField(max_length=100, blank=True, null=True, default="")
     review_text = models.TextField(max_length=500, blank=True, null=True, default="")
     rating = models.PositiveSmallIntegerField(
@@ -67,7 +68,7 @@ class ProductReview(models.Model):
     shipping_address = models.TextField(blank=True, null=True, default="")
 
     def __str__(self):
-        return f"Review by {self.user.username} for {self.product.name}"
+        return f"Review by {self.user} for {self.product.name}"
 
 # --------------------------------------------
 # Product Relationship Mapping Models
@@ -103,3 +104,45 @@ class ProductSpecificationAttributeMapping(models.Model):
     id = models.AutoField(primary_key=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     specification_attribute_option_id = models.IntegerField()
+
+# --------------------------------------------
+# Custom Admin Model
+# --------------------------------------------
+class AdminManager(BaseUserManager):
+    def create_user(self, email, full_name, mobile, password=None):
+        if not email:
+            raise ValueError("Email is required")
+        user = self.model(email=self.normalize_email(email), full_name=full_name, mobile=mobile)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, full_name, mobile, password):
+        user = self.create_user(email, full_name, mobile, password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+class Admin(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    full_name = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=15)
+    crn = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    profile_image = models.ImageField(upload_to='admin_profiles/', blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    role = models.CharField(max_length=50, blank=True, null=True)
+    profile_completed = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    groups = models.ManyToManyField(Group, related_name='custom_admin_set', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='custom_admin_permissions', blank=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['full_name', 'mobile']
+
+    objects = AdminManager()
+
+    def __str__(self):
+        return self.full_name

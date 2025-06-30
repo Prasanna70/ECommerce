@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="{% static 'css/base.css' %}" rel="stylesheet" />
 </head>
 <body>
@@ -52,32 +53,32 @@
 <div class="content" style="margin-left: 250px;">
 
   <div class="navbar">
-    <div class="navbar-left">
-      <i class="fas fa-bars"></i>
-      <!-- <a href="#">Home</a>
-      <a href="#">Contact</a> -->
-    </div>
-    <div class="navbar-right">
-      <div class="icon-wrapper">
-        <i class="fas fa-search"></i>
-      </div>
-      <div class="icon-wrapper">
-        <i class="fas fa-comments"></i>
-        <span class="icon-badge"></span>
-      </div>
-      <div class="icon-wrapper">
-        <i class="fas fa-bell"></i>
-        <span class="icon-badge notification-badge"></span>
-      </div>
-      <div class="icon-wrapper">
-        <i class="fas fa-expand"></i>
-      </div>
-      <div class="profile">
-        <img src="" alt="Profile">
-        <span>Alexander Pierce</span>
-      </div>
-    </div>
+  <div class="navbar-left">
+    <i class="fas fa-bars"></i>
   </div>
+  <div class="navbar-right">
+    {% if request.user.is_authenticated %}
+      <div class="icon-wrapper">
+        <i class="fas fa-user-check text-success"></i>
+      </div>
+      <div class="profile dropdown">
+        <a href="#" class="dropdown-toggle text-dark text-decoration-none" data-bs-toggle="dropdown">
+          <img src="{% static 'images/profile.png' %}" alt="Profile" width="30" height="30" class="rounded-circle">
+          <span>{{ request.user.username }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'adminpanel:view_profile' %}"><i class="fas fa-id-badge"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="{% url 'adminpanel:logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+      </div>
+    {% else %}
+      <a href="{% url 'adminpanel:login' %}" class="btn btn-outline-primary me-2">Login</a>
+      <a href="{% url 'adminpanel:admin_register' %}" class="btn btn-primary">Sign Up</a>
+    {% endif %}
+  </div>
+</div>
+
 
   <header class="py-3 bg-white border-bottom">
     <div class="container-fluid">
